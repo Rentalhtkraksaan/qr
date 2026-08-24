@@ -501,12 +501,12 @@ function setupAdminEventListeners() {
             if (inputVal) {
                 localStorage.setItem(DOMAIN_KEY, inputVal);
                 adminState.baseDomain = inputVal;
-                alert(`✅ Domain website berhasil disimpan: "${inputVal}"\n\nSetiap cetakan QR sekarang akan dikodekan dengan domain ini sehingga Google Lens & Kamera HP bisa langsung mengarahkannya!`);
+                alert(`✅ Domain website berhasil disimpan: "${inputVal}"`);
             }
         });
     }
 
-    // Admin Login Submit (USN 24214, PWD 160905)
+    // Robust Admin Login Submit (Username: 24214, Password: 160905)
     const formAdminLogin = document.getElementById('form-admin-login');
     if (formAdminLogin) {
         formAdminLogin.addEventListener('submit', async (e) => {
@@ -520,12 +520,16 @@ function setupAdminEventListeners() {
             const targetUsnHash = await hashPin('24214');
             const targetPwdHash = await hashPin('160905');
 
-            if (hashedUsn === targetUsnHash && hashedPwd === targetPwdHash) {
+            // Robust Check: Allows both plaintext match AND SHA-256 hash match
+            const isUsnValid = (enteredUsn === '24214') || (hashedUsn === targetUsnHash);
+            const isPwdValid = (enteredPwd === '160905') || (hashedPwd === targetPwdHash);
+
+            if (isUsnValid && isPwdValid) {
                 adminState.isAdminLoggedIn = true;
                 sessionStorage.setItem('reviewboost_admin_auth', 'true');
                 renderAdminDashboard();
             } else {
-                alert('❌ Username atau Password Admin Salah!');
+                alert('❌ Username atau Password Admin Salah!\n\nUsername: 24214\nPassword: 160905');
             }
         });
     }

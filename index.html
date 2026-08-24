@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReviewBoost - Layanan Peningkat Google Review Kafe & Resto</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- QRCode JS Generator Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-theme">
+
+    <!-- Header / Navbar Navigation (Public User View - No Admin Link) -->
+    <header class="navbar" id="main-navbar">
+        <div class="nav-container">
+            <a href="#landing" class="logo">
+                <div class="logo-icon"><i class="fa-solid fa-star-half-stroke"></i></div>
+                <span class="logo-text">Review<span class="highlight">Boost</span></span>
+            </a>
+
+            <!-- Firebase Status Badge -->
+            <div class="firebase-status-badge" id="firebase-sync-status">
+                <span class="pulse-dot-green"></span> Firebase Secured (neo-asisten)
+            </div>
+            
+            <nav class="nav-links">
+                <a href="#landing" class="nav-item active" data-view="landing">Beranda</a>
+                <a href="#register-cafe-form" class="nav-item">Daftarkan Bisnis Anda</a>
+                <a href="#cafe-dashboard" class="nav-item" data-view="cafe-dashboard">Portal Kafe</a>
+            </nav>
+
+            <div class="nav-actions">
+                <a href="#register-cafe-form" class="btn btn-primary btn-outline-sm glow">
+                    <i class="fa-solid fa-rocket"></i> Daftarkan Kafe Anda
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN VIEWS CONTAINER -->
+    <main id="app-content">
+
+        <!-- ========================================== -->
+        <!-- VIEW 1: PUBLIC LANDING PAGE (Daftarkan Bisnis Anda) -->
+        <!-- ========================================== -->
+        <section id="view-landing" class="view-section active">
+            <!-- Hero Section -->
+            <div class="hero-container">
+                <div class="hero-badge">
+                    <span class="pulse-dot"></span> Solusi #1 Peningkat Bintang 5 Google Review Kafe
+                </div>
+                <h1 class="hero-title">
+                    Banjir <span class="gradient-text">Ulasan Bintang 5</span> di Google Maps & Tingkatkan Omset Kafe Anda!
+                </h1>
+                <p class="hero-subtitle">
+                    Daftarkan usaha kafe / resto Anda sekarang. Dapatkan Standee Akrilik QR Pintar bergaya resmi Google yang otomatis menyaring ulasan positif & mempercepat pertumbuhan rating kafe Anda.
+                </p>
+                <div class="hero-cta-group">
+                    <a href="#register-cafe-form" class="btn btn-primary btn-lg glow">
+                        <i class="fa-solid fa-paper-plane"></i> Daftarkan Bisnis Kafe Anda Sekarang
+                    </a>
+                    <a href="#cafe-dashboard" class="btn btn-glass btn-lg">
+                        <i class="fa-solid fa-right-to-bracket"></i> Portal Pemilik Kafe
+                    </a>
+                </div>
+
+                <div class="hero-stats">
+                    <div class="stat-card">
+                        <div class="stat-num">+450%</div>
+                        <div class="stat-label">Rata-rata Kenaikan Ulasan Google</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-num">100%</div>
+                        <div class="stat-label">Perlindungan dari Rating Jelek</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-num">Bintang 5</div>
+                        <div class="stat-label">Otomatis Terhubung ke Maps</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Value Proposition Features Section -->
+            <div class="section-container">
+                <div class="section-header">
+                    <span class="sub-heading">Keunggulan Layanan Kami</span>
+                    <h2>Mengapa Kafe Anda Wajib Menggunakan ReviewBoost?</h2>
+                    <p>Sistem Akrilik QR Pintar yang langsung terhubung ke aplikasi Google Maps di HP pengunjung.</p>
+                </div>
+
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-step">01</div>
+                        <div class="feature-icon"><i class="fa-solid fa-qrcode"></i></div>
+                        <h3>Standee QR Akrilik Google Resmi</h3>
+                        <p>Kartu meja akrilik elegan bermotif resmi Google yang menarik perhatian pengunjung kafe untuk melakukan scan.</p>
+                    </div>
+
+                    <div class="feature-card highlighted">
+                        <div class="feature-step">02</div>
+                        <div class="feature-icon"><i class="fa-solid fa-filter"></i></div>
+                        <h3>Smart Review Filter</h3>
+                        <p>Pengunjung yang memberi <strong>Bintang 4-5</strong> langsung dialihkan ke Google Maps. Bintang 1-3 dialihkan ke Inbox Privat Anda!</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-step">03</div>
+                        <div class="feature-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                        <h3>Bebas Rating Buruk Publik</h3>
+                        <p>Kritik dan keluhan pengunjung diterima secara privat oleh manager kafe untuk evaluasi tanpa merusak rating bintang di Google.</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-step">04</div>
+                        <div class="feature-icon"><i class="fa-solid fa-chart-line"></i></div>
+                        <h3>Portal Dashboard Laporan</h3>
+                        <p>Pemilik kafe mendapatkan akses portal khusus untuk memantau jumlah statistik scan dan membaca saran privat pengunjung.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PUBLIC FORM: DAFTARKAN BISNIS KAFE ANDA -->
+            <div id="register-cafe-form" class="section-container">
+                <div class="glass-panel p-4" style="padding: 40px; max-width: 720px; margin: 0 auto;">
+                    <div class="section-header text-center" style="margin-bottom: 24px;">
+                        <span class="sub-heading">Formulir Pendaftaran</span>
+                        <h2>Daftarkan Bisnis Anda Hari Ini!</h2>
+                        <p>Tim kami akan menghubungi Anda dan mengirimkan Standee QR Akrilik ke alamat kafe Anda.</p>
+                    </div>
+
+                    <form id="form-public-register-cafe" class="custom-form">
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label for="pub-cafe-name"><i class="fa-solid fa-store"></i> Nama Kafe / Resto Anda *</label>
+                                <input type="text" id="pub-cafe-name" placeholder="Contoh: Kopi Kenangan Senja Sudirman" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="pub-owner-name"><i class="fa-solid fa-user"></i> Nama Pemilik / Manager *</label>
+                                <input type="text" id="pub-owner-name" placeholder="Contoh: Pak Hendra" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="pub-phone"><i class="fa-solid fa-phone"></i> Nomor WhatsApp Aktif *</label>
+                                <input type="tel" id="pub-phone" placeholder="Contoh: 08123456789" required>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label for="pub-maps-url"><i class="fa-brands fa-google"></i> Link Google Maps Kafe (Jika Ada)</label>
+                                <input type="url" id="pub-maps-url" placeholder="https://maps.google.com/?q=Nama+Kafe+Anda">
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label for="pub-address"><i class="fa-solid fa-location-dot"></i> Alamat Lengkap Pengiriman Standee QR *</label>
+                                <textarea id="pub-address" rows="3" placeholder="Jl. Sudirman No. 45, Jakarta Selatan..." required></textarea>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block btn-lg glow" style="margin-top: 16px;">
+                            <i class="fa-solid fa-paper-plane"></i> Kirim Permohonan Pendaftaran Kafe
+                        </button>
+                    </form>
+
+                    <div id="pub-register-success-msg" class="alert alert-info hidden" style="margin-top: 20px;">
+                        <i class="fa-solid fa-circle-check"></i> Permohonan pendaftaran kafe Anda berhasil terkirim! Tim Admin kami akan segera menghubungi WhatsApp Anda.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ========================================== -->
+        <!-- VIEW 2: CUSTOMER SCAN PAGE (#scan/QR-ID) -->
+        <!-- ========================================== -->
+        <section id="view-scan" class="view-section">
+            <div class="scan-mobile-wrapper">
+                <div class="scan-mobile-card">
+                    <!-- Cafe Header -->
+                    <div class="cafe-brand-header">
+                        <div class="cafe-avatar" id="scan-cafe-logo">
+                            <i class="fa-solid fa-store"></i>
+                        </div>
+                        <h2 id="scan-cafe-name">Memuat Kafe...</h2>
+                        <p class="cafe-tagline" id="scan-cafe-tagline">Bagikan pengalaman Anda bersantap di sini</p>
+                    </div>
+
+                    <!-- Star Rating Selector -->
+                    <div class="rating-box">
+                        <h3>Berapa bintang pengalaman Anda?</h3>
+                        <div class="star-rating" id="star-rating-container">
+                            <i class="fa-star fa-solid star-icon" data-value="1"></i>
+                            <i class="fa-star fa-solid star-icon" data-value="2"></i>
+                            <i class="fa-star fa-solid star-icon" data-value="3"></i>
+                            <i class="fa-star fa-solid star-icon" data-value="4"></i>
+                            <i class="fa-star fa-solid star-icon" data-value="5"></i>
+                        </div>
+                        <div class="rating-feedback-label" id="rating-label">Pilih bintang di atas</div>
+                    </div>
+
+                    <!-- Action Result 1: High Rating (4-5 Stars) -> Redirect to Google Review -->
+                    <div id="scan-high-rating-result" class="rating-result-content hidden">
+                        <div class="result-icon success-glow">
+                            <i class="fa-brands fa-google"></i>
+                        </div>
+                        <h3>Terima Kasih Banyak! ❤️</h3>
+                        <p>Dukungan Bintang 5 Anda sangat berarti bagi kelangsungan usaha kami.</p>
+                        <a href="#" id="btn-redirect-google" target="_blank" class="btn btn-google btn-block glow">
+                            <i class="fa-brands fa-google"></i> Kirim Ulasan di Google Maps
+                        </a>
+                        <small class="redirect-notice">Anda akan diarahkan langsung ke halaman Google Review resmi.</small>
+                    </div>
+
+                    <!-- Action Result 2: Low Rating (1-3 Stars) -> Private Feedback Form -->
+                    <div id="scan-low-rating-result" class="rating-result-content hidden">
+                        <div class="result-icon warning-glow">
+                            <i class="fa-solid fa-comment-dots"></i>
+                        </div>
+                        <h3>Mohon Maaf Atas Ketidaknyamanannya 🙏</h3>
+                        <p>Masukkan Anda sangat berharga agar manager kami bisa segera memperbaikinya.</p>
+                        
+                        <form id="form-private-feedback" class="feedback-form">
+                            <div class="form-group">
+                                <label for="fb-message">Apa yang perlu kami tingkatkan?</label>
+                                <textarea id="fb-message" rows="4" placeholder="Tuliskan kritik/saran mengenai rasa makanan, pelayanan, atau kebersihan..." required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="fb-contact">Nomor WA / Nama (Opsional untuk tindak lanjut)</label>
+                                <input type="text" id="fb-contact" placeholder="Contoh: Budi (08123456789)">
+                            </div>
+                            <button type="submit" class="btn btn-warning btn-block">
+                                <i class="fa-solid fa-paper-plane"></i> Kirim Langsung ke Manager
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Action Result 3: Feedback Success Confirmation -->
+                    <div id="scan-feedback-submitted" class="rating-result-content hidden">
+                        <div class="result-icon success-glow">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+                        <h3>Pesan Berhasil Terkirim!</h3>
+                        <p>Terima kasih! Pesan Anda telah disampaikan langsung ke tim manajemen kafe untuk segera ditindaklanjuti.</p>
+                        <button onclick="location.reload()" class="btn btn-outline-sm mt-3">Kembali</button>
+                    </div>
+
+                    <!-- Mobile Card Footer -->
+                    <div class="scan-card-footer">
+                        <span>Powered by <strong>ReviewBoost</strong></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ========================================== -->
+        <!-- VIEW 3: ON-SITE QR ACTIVATION (#activate/QR-ID) -->
+        <!-- ========================================== -->
+        <section id="view-activate" class="view-section">
+            <div class="activation-container">
+                <div class="activation-card glass-panel">
+                    <div class="activation-header">
+                        <div class="activation-badge">
+                            <i class="fa-solid fa-key"></i> Pendaftaran QR Kosong
+                        </div>
+                        <h2>Aktivasi Standee QR Kafe</h2>
+                        <p>Kode QR ID: <span class="highlight-code" id="activate-qr-id-display">QR-XXXX</span></p>
+                    </div>
+
+                    <div class="alert alert-info">
+                        <i class="fa-solid fa-circle-info"></i> QR ini belum terdaftar. Ketik nama kafe dan gunakan tombol <strong>'Cari di Google Maps'</strong> di bawah untuk menghubungkannya!
+                    </div>
+
+                    <form id="form-activate-qr" class="custom-form">
+                        <input type="hidden" id="act-qr-id">
+
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label for="act-cafe-name"><i class="fa-solid fa-store"></i> Nama Kafe / Resto *</label>
+                                <div style="display:flex; gap:10px;">
+                                    <input type="text" id="act-cafe-name" placeholder="Contoh: Kopi Kenangan Senja Sudirman" required>
+                                    <button type="button" class="btn btn-outline" id="btn-search-maps-helper" style="white-space:nowrap;">
+                                        <i class="fa-solid fa-magnifying-glass-location"></i> Cari di Maps
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="form-group full-width">
+                                <label for="act-google-url"><i class="fa-brands fa-google"></i> Link Ulasan Google Maps (Google Review URL) *</label>
+                                <input type="url" id="act-google-url" placeholder="https://www.google.com/maps/search/?api=1&query=Nama+Kafe" required>
+                                <small class="help-text">Link ulasan otomatis dibuat saat Anda klik 'Cari di Maps' atau salin link dari Google Maps kafe.</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="act-owner-name"><i class="fa-solid fa-user"></i> Nama Pemilik / Manager *</label>
+                                <input type="text" id="act-owner-name" placeholder="Contoh: Pak Hendra" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="act-phone"><i class="fa-solid fa-phone"></i> No. WhatsApp Kafe *</label>
+                                <input type="tel" id="act-phone" placeholder="08123456789" required>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block btn-lg glow" style="margin-top: 16px;">
+                            <i class="fa-solid fa-circle-check"></i> Aktifkan QR Sekarang & Hubungkan Kafe
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- VIEW 4: CAFE OWNER DASHBOARD (#cafe-dashboard) -->
+        <!-- ========================================== -->
+        <section id="view-cafe-dashboard" class="view-section">
+            <div class="cafe-portal-container">
+                <div id="cafe-login-view" class="portal-login-box glass-panel">
+                    <div class="login-header">
+                        <div class="icon-circle"><i class="fa-solid fa-mug-hot"></i></div>
+                        <h2>Portal Kafe Mitra</h2>
+                        <p>Pilih kafe Anda untuk melihat statistik scan & laporan.</p>
+                    </div>
+
+                    <form id="form-cafe-login" class="custom-form">
+                        <div class="form-group">
+                            <label for="login-cafe-select">Pilih Kafe Anda:</label>
+                            <select id="login-cafe-select" required></select>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block glow">
+                            <i class="fa-solid fa-right-to-bracket"></i> Masuk ke Portal Kafe
+                        </button>
+                    </form>
+                </div>
+
+                <div id="cafe-main-portal" class="portal-main-content hidden">
+                    <div class="portal-header-bar">
+                        <div class="cafe-info-brand">
+                            <h2 id="portal-cafe-name">Kopi Kenangan Senja</h2>
+                            <span class="badge badge-success">Aktif</span>
+                        </div>
+                    </div>
+
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-icon purple"><i class="fa-solid fa-qrcode"></i></div>
+                            <div class="metric-info">
+                                <span class="metric-title">ID QR Terpasang</span>
+                                <span class="metric-value" id="portal-qr-id">-</span>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon green"><i class="fa-solid fa-eye"></i></div>
+                            <div class="metric-info">
+                                <span class="metric-title">Total Scan Pengunjung</span>
+                                <span class="metric-value" id="portal-scans-count">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Firebase Compat SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <!-- Application Logic Script -->
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+{
+  "rules": {
+    "qrs": {
+      ".read": true,
+      "$qr_id": {
+        ".write": "!data.exists() || data.child('status').val() == 'unassigned' || request.auth != null || newData.hasChild('scansCount')"
+      }
+    },
+    "feedbacks": {
+      ".read": true,
+      "$feedback_id": {
+        ".write": "!data.exists()"
+      }
+    },
+    "inquiries": {
+      ".read": true,
+      "$inquiry_id": {
+        ".write": "!data.exists()"
+      }
+    },
+    "adminAuth": {
+      ".read": false,
+      ".write": false
+    }
+  }
+}

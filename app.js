@@ -275,6 +275,11 @@ function renderScanView(qrId) {
         const cafeNameEl = document.getElementById('scan-cafe-name');
         if (cafeNameEl) cafeNameEl.textContent = qrObj.cafeName || 'Google Review';
 
+        const btnViewGoogleReviews = document.getElementById('btn-view-google-reviews');
+        if (btnViewGoogleReviews) {
+            btnViewGoogleReviews.href = ensureDirectWriteReviewUrl(qrObj.googleUrl, qrObj.cafeName);
+        }
+
         // Track scan count
         const newScans = (qrObj.scansCount || 0) + 1;
         if (db) {
@@ -282,47 +287,7 @@ function renderScanView(qrId) {
         }
         qrObj.scansCount = newScans;
         saveLocalState();
-
-        // Render Realtime Review Feed for this cafe
-        renderRealtimeReviewFeed(qrObj);
     }
-}
-
-function renderRealtimeReviewFeed(qrObj) {
-    const container = document.getElementById('scan-reviews-container');
-    const countEl = document.getElementById('scan-review-count');
-    if (!container || !qrObj) return;
-
-    const allReviews = appState.data.reviews || [];
-    const cafeReviews = allReviews.filter(r => r.qrId === qrObj.id || (r.cafeName && r.cafeName.toLowerCase() === qrObj.cafeName.toLowerCase()));
-
-    if (countEl) countEl.textContent = cafeReviews.length;
-
-    if (cafeReviews.length === 0) {
-        container.innerHTML = `
-            <div style="text-align:center; padding:16px; color:var(--text-muted); font-size:0.85rem;">
-                <i class="fa-regular fa-star" style="font-size:1.4rem; color:var(--google-yellow); margin-bottom:6px; display:block;"></i>
-                Jadilah pengunjung pertama yang memberikan Ulasan Bintang 5 untuk <strong>${qrObj.cafeName}</strong>!
-            </div>
-        `;
-        return;
-    }
-
-    container.innerHTML = cafeReviews.map(r => `
-        <div class="review-feed-card">
-            <div class="review-feed-header">
-                <div class="review-feed-author">
-                    <i class="fa-solid fa-circle-user" style="color:var(--accent-cyan); font-size:1.1rem;"></i>
-                    ${r.userName || 'Pengunjung Google'}
-                </div>
-                <div class="review-feed-time">${r.timestamp || 'Baru saja'}</div>
-            </div>
-            <div class="review-feed-stars">
-                ${'★'.repeat(r.stars || 5)}${'☆'.repeat(5 - (r.stars || 5))}
-            </div>
-            ${r.comment ? `<div class="review-feed-body">"${r.comment}"</div>` : ''}
-        </div>
-    `).join('');
 }
 
 function renderActivationView(qrId) {
@@ -564,43 +529,20 @@ function setupEventListeners() {
         btnPostReview.addEventListener('click', () => {
             if (appState.activeScanQr) {
                 const qrObj = appState.activeScanQr;
-                const reviewTextEl = document.getElementById('google-review-text');
-                const commentText = reviewTextEl ? reviewTextEl.value.trim() : '';
 
-                // Track review submission in database
-                const revId = 'REV-' + Date.now();
-                const reviewData = {
-                    id: revId,
-                    qrId: qrObj.id,
-                    cafeName: qrObj.cafeName,
-                    userName: 'Pengunjung Google',
-                    stars: appState.selectedStarRating || 5,
-                    comment: commentText,
-                    timestamp: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ', Hari ini'
-                };
-
-                if (!appState.data.reviews) appState.data.reviews = [];
-                appState.data.reviews.unshift(reviewData);
-
+                // 1. Database HANYA menyimpan jumlah scan count & status kontrol QR
+                const newScans = (qrObj.scansCount || 0) + 1;
+                qrObj.scansCount = newScans;
                 if (db) {
-                    db.ref(`reviews/${revId}`).set(reviewData).catch(e => {});
+                    db.ref(`qrs/${qrObj.id}`).update({ scansCount: newScans }).catch(e => {});
                 }
-
                 saveLocalState();
 
-                // Show glowing success banner
-                const bannerEl = document.getElementById('scan-review-success-banner');
-                const bannerMsg = document.getElementById('success-banner-msg');
-                if (bannerEl && bannerMsg) {
-                    bannerMsg.textContent = `🎉 Terimakasih! Ulasan Bintang 5 Anda telah berhasil dikirim & masuk ke ulasan ${qrObj.cafeName}!`;
-                    bannerEl.classList.remove('hidden');
-                }
+                // 2. Format link ulasan langsung Google Review
+                const targetUrl = ensureDirectWriteReviewUrl(qrObj.googleUrl, qrObj.cafeName);
 
-                // Reset textarea
-                if (reviewTextEl) reviewTextEl.value = '';
-
-                // Re-render live review feed instantly!
-                renderRealtimeReviewFeed(qrObj);
+                // 3. Ulasan & Bintang dikirim LANGSUNG ke Google Review menggunakan akun Google di HP pengguna!
+                window.location.href = targetUrl;
             } else {
                 alert('Silakan scan QR Code kafe terlebih dahulu.');
                 window.location.hash = '#landing';

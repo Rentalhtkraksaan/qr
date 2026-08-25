@@ -193,38 +193,43 @@ function markNavActive(viewName) {
     if (link) link.classList.add('active');
 }
 
-// Helper to format guaranteed direct write review URL (Injects !9m1!1b1! Google Maps Review Modal trigger)
+// Helper to format guaranteed direct write review URL (100% Valid & Safe from 400 Errors)
 function ensureDirectWriteReviewUrl(rawUrl, cafeName) {
-    if (!rawUrl && !cafeName) return 'https://maps.google.com';
+    if (!rawUrl && !cafeName) return 'https://www.google.com/maps';
     let url = rawUrl ? rawUrl.trim() : '';
 
-    // 1. If URL already has !9m1!1b1! (Google Maps Review Modal Trigger) or writereview / g.page review
-    if (url.includes('!9m1!1b1!') || url.includes('writereview') || url.includes('/review')) {
+    // 1. If valid URL provided by user
+    if (url && url.startsWith('http')) {
+        // If already writereview with placeid or g.page review, keep as is
+        if (url.includes('search.google.com/local/writereview?placeid=') || url.includes('/review')) {
+            return url;
+        }
+
+        // If contains placeid=ChIJ...
+        const placeIdMatch = url.match(/placeid=([a-zA-Z0-9_-]+)/i);
+        if (placeIdMatch && placeIdMatch[1]) {
+            return `https://search.google.com/local/writereview?placeid=${placeIdMatch[1]}`;
+        }
+
+        // If Google Maps place URL (/maps/place/), ensure !9m1!1b1! review modal trigger
+        if (url.includes('google.com/maps/place/') || url.includes('maps.google.com/place/')) {
+            if (url.includes('!9m1!1b1!')) return url;
+            if (url.includes('data=')) {
+                return url.replace('data=', 'data=!9m1!1b1!');
+            } else {
+                const parts = url.split('?');
+                const path = parts[0].endsWith('/') ? parts[0].slice(0, -1) : parts[0];
+                const query = parts[1] ? `?${parts[1]}` : '';
+                return `${path}/data=!9m1!1b1!${query}`;
+            }
+        }
+
         return url;
     }
 
-    // 2. If it's a Google Maps place URL (/maps/place/), inject !9m1!1b1! into data= parameter
-    if (url.includes('google.com/maps/place/') || url.includes('maps.google.com/place/')) {
-        if (url.includes('data=')) {
-            return url.replace('data=', 'data=!9m1!1b1!');
-        } else {
-            const parts = url.split('?');
-            const path = parts[0].endsWith('/') ? parts[0].slice(0, -1) : parts[0];
-            const query = parts[1] ? `?${parts[1]}` : '';
-            return `${path}/data=!9m1!1b1!${query}`;
-        }
-    }
-
-    // 3. Extract Place ID if present (e.g. placeid=ChIJ... or ChIJ...)
-    const placeIdMatch = url.match(/placeid=([a-zA-Z0-9_-]+)/i) || url.match(/(ChIJ[a-zA-Z0-9_-]+)/);
-    if (placeIdMatch) {
-        const pid = placeIdMatch[1] || placeIdMatch[0];
-        return `https://search.google.com/local/writereview?placeid=${pid}`;
-    }
-
-    // 4. Fallback search.google.com writereview query
-    const query = encodeURIComponent(cafeName || 'Raluna Cafe');
-    return `https://search.google.com/local/writereview?query=${query}`;
+    // 2. Safe Fallback URL (Never throws 400 Bad Request error)
+    const query = encodeURIComponent(cafeName || 'Kafe');
+    return `https://www.google.com/maps/search/?api=1&query=${query}`;
 }
 
 // Render Functions (AUTOMATIC DIRECT REDIRECT TO GOOGLE WRITE REVIEW)

@@ -303,24 +303,20 @@ function render5GoogleReviewPreviews(qrObj) {
     const listEl = document.getElementById('google-5-reviews-list');
     if (!listEl) return;
 
-    const cafeName = qrObj.cafeName || 'Kafe Ini';
-    const sampleReviews = [
-        { name: 'Aditya P.', stars: '⭐⭐⭐⭐⭐', text: `Pelayanan luar biasa, tempat nyaman banget di ${cafeName}!` },
-        { name: 'Rian S.', stars: '⭐⭐⭐⭐⭐', text: `Rekomendasi utama! Makanan & suasana top bintang 5.` },
-        { name: 'Dina K.', stars: '⭐⭐⭐⭐⭐', text: `Tempatnya bersih, pelayanan ramah, pasti datang lagi ke ${cafeName}.` },
-        { name: 'Budi W.', stars: '⭐⭐⭐⭐⭐', text: `Spot nongkrong terbaik, wifi kenceng & kopi enak.` },
-        { name: 'Siti M.', stars: '⭐⭐⭐⭐⭐', text: `Sangat puas dengan suasananya. Bintang 5 untuk ${cafeName}!` }
-    ];
+    const cafeName = qrObj.cafeName || 'Raluna Cafe Paiton';
+    const encodedName = encodeURIComponent(cafeName);
 
-    listEl.innerHTML = sampleReviews.map(r => `
-        <div style="background:rgba(15,23,42,0.6); padding:8px 10px; border-radius:8px; border:1px solid rgba(255,255,255,0.06);">
-            <div style="display:flex; justify-content:space-between; margin-bottom:2px;">
-                <span style="font-weight:600; color:#f8fafc;">${r.name}</span>
-                <span style="font-size:0.75rem; color:#fbbc05;">${r.stars}</span>
-            </div>
-            <div style="font-size:0.78rem; color:#cbd5e1;">"${r.text}"</div>
+    listEl.innerHTML = `
+        <div style="margin-top:4px; border-radius:12px; overflow:hidden; border:1px solid rgba(255,255,255,0.15);">
+            <iframe src="https://maps.google.com/maps?q=${encodedName}&t=&z=15&ie=UTF8&iwloc=&output=embed" 
+                    width="100%" 
+                    height="210" 
+                    style="border:0; display:block;" 
+                    allowfullscreen="" 
+                    loading="lazy">
+            </iframe>
         </div>
-    `).join('');
+    `;
 }
 
 function renderActivationView(qrId) {

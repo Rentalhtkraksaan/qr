@@ -232,7 +232,7 @@ function ensureDirectWriteReviewUrl(rawUrl, cafeName) {
     return `https://www.google.com/maps/search/?api=1&query=${query}`;
 }
 
-// Render Functions (AUTOMATIC DIRECT REDIRECT TO GOOGLE WRITE REVIEW)
+// Render Functions (IN-APP GOOGLE 5-STAR REVIEW MODAL SCREEN)
 function renderScanView(qrId) {
     const qrObj = appState.data.qrs.find(q => q.id.toUpperCase() === qrId.toUpperCase());
     
@@ -256,9 +256,12 @@ function renderScanView(qrId) {
         return;
     }
 
-    // Status Check 4: If ACTIVE -> INSTANT AUTOMATIC DIRECT REDIRECT TO GOOGLE REVIEW 5-STAR WRITE DIALOG!
+    // Status Check 4: If ACTIVE -> Display In-App Google 5-Star Review Modal Screen
     if (qrObj.status === 'active') {
         appState.activeScanQr = qrObj;
+
+        const cafeNameEl = document.getElementById('scan-cafe-name');
+        if (cafeNameEl) cafeNameEl.textContent = qrObj.cafeName || 'Google Review';
 
         // Track scan count
         const newScans = (qrObj.scansCount || 0) + 1;
@@ -267,13 +270,6 @@ function renderScanView(qrId) {
         }
         qrObj.scansCount = newScans;
         saveLocalState();
-
-        // Get guaranteed direct write review URL with action=writereview
-        const targetReviewUrl = ensureDirectWriteReviewUrl(qrObj.googleUrl, qrObj.cafeName);
-
-        // INSTANT REDIRECT DIRECTLY TO GOOGLE MAPS WRITE REVIEW DIALOG!
-        window.location.href = targetReviewUrl;
-        return;
     }
 }
 
@@ -502,6 +498,7 @@ function setupEventListeners() {
         starContainer.querySelectorAll('.google-star-icon').forEach(star => {
             star.addEventListener('click', (e) => {
                 const val = parseInt(e.currentTarget.getAttribute('data-value'));
+                appState.selectedStarRating = val;
                 starContainer.querySelectorAll('.google-star-icon').forEach((s, idx) => {
                     if (idx < val) s.classList.add('active');
                     else s.classList.remove('active');
@@ -513,10 +510,31 @@ function setupEventListeners() {
     const btnPostReview = document.getElementById('btn-submit-google-review');
     if (btnPostReview) {
         btnPostReview.addEventListener('click', () => {
-            if (appState.activeScanQr && appState.activeScanQr.googleUrl) {
-                window.location.href = appState.activeScanQr.googleUrl;
-            } else if (appState.activeScanQr && appState.activeScanQr.cafeName) {
-                window.location.href = `https://search.google.com/local/writereview?query=${encodeURIComponent(appState.activeScanQr.cafeName)}`;
+            if (appState.activeScanQr) {
+                const targetUrl = ensureDirectWriteReviewUrl(appState.activeScanQr.googleUrl, appState.activeScanQr.cafeName);
+                
+                // Track review submission in database
+                const revId = 'REV-' + Date.now();
+                const reviewTextEl = document.getElementById('google-review-text');
+                const reviewData = {
+                    qrId: appState.activeScanQr.id,
+                    cafeName: appState.activeScanQr.cafeName,
+                    stars: appState.selectedStarRating || 5,
+                    comment: reviewTextEl ? reviewTextEl.value : '',
+                    timestamp: new Date().toLocaleString('id-ID')
+                };
+
+                if (!appState.data.reviews) appState.data.reviews = [];
+                appState.data.reviews.unshift(reviewData);
+
+                if (db) {
+                    db.ref(`reviews/${revId}`).set(reviewData).catch(e => {});
+                }
+
+                saveLocalState();
+
+                // Direct redirect to Google Review submission page!
+                window.location.href = targetUrl;
             } else {
                 alert('Mengarahkan ke Google Review...');
                 window.location.hash = '#landing';

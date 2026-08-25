@@ -1518,3 +1518,40 @@ input:checked + .slider:before {
     color: var(--text-muted);
     margin-top: 2px;
 }
+
+/* Realtime Review Feed Card Styling */
+.review-feed-card {
+    background: rgba(15, 23, 42, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 0.85rem;
+    text-align: left;
+}
+.review-feed-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+.review-feed-author {
+    font-weight: 600;
+    color: #f8fafc;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.review-feed-time {
+    font-size: 0.72rem;
+    color: #94a3b8;
+}
+.review-feed-stars {
+    color: #fbbc05;
+    font-size: 0.8rem;
+    margin-bottom: 4px;
+}
+.review-feed-body {
+    color: #cbd5e1;
+    font-size: 0.82rem;
+    line-height: 1.4;
+}

@@ -227,6 +227,24 @@
                             Post
                         </button>
                     </div>
+
+                    <!-- Review Success Toast Banner -->
+                    <div id="scan-review-success-banner" class="alert alert-info hidden" style="margin-top:20px; background:rgba(16,185,129,0.2); border-color:#10b981; color:#34d399; font-weight:600; text-align:center;">
+                        <i class="fa-solid fa-circle-check"></i> <span id="success-banner-msg">Terimakasih! Ulasan Bintang 5 Anda telah berhasil terkirim & masuk ke Google Review!</span>
+                    </div>
+
+                    <!-- Live Customer Review Feed -->
+                    <div class="realtime-review-feed-section" style="margin-top:24px; text-align:left;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                            <h3 style="font-size:0.95rem; color:var(--text-main); font-weight:600;">
+                                <i class="fa-solid fa-comments" style="color:var(--google-yellow);"></i> Ulasan Realtime Pengunjung (<span id="scan-review-count">0</span>)
+                            </h3>
+                            <span class="badge badge-success" style="font-size:0.75rem; background:rgba(16,185,129,0.2); color:#34d399; padding:4px 8px; border-radius:12px;"><i class="fa-solid fa-bolt"></i> Live</span>
+                        </div>
+                        <div id="scan-reviews-container" class="reviews-feed-list" style="display:flex; flex-direction:column; gap:10px;">
+                            <!-- Live review items rendered here -->
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>

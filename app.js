@@ -128,6 +128,18 @@ function initDataSync() {
                 saveLocalState();
             }
         });
+
+        db.ref('reviews').on('value', (snapshot) => {
+            const val = snapshot.val();
+            if (val) {
+                const firebaseReviews = Object.keys(val).map(key => ({ ...val[key], id: key })).reverse();
+                appState.data.reviews = firebaseReviews;
+                saveLocalState();
+                if (appState.activeScanQr) {
+                    renderRealtimeReviewFeed(appState.activeScanQr);
+                }
+            }
+        });
     }
 }
 
@@ -232,13 +244,13 @@ function ensureDirectWriteReviewUrl(rawUrl, cafeName) {
     return `https://www.google.com/maps/search/?api=1&query=${query}`;
 }
 
-// Render Functions (IN-APP GOOGLE 5-STAR REVIEW MODAL SCREEN)
+// Render Functions (IN-APP GOOGLE 5-STAR REVIEW MODAL SCREEN & REALTIME FEED)
 function renderScanView(qrId) {
     const qrObj = appState.data.qrs.find(q => q.id.toUpperCase() === qrId.toUpperCase());
     
-    // Status Check 1: If DISABLED by admin -> Redirect to landing page perkenalan
+    // Status Check 1: If DISABLED by admin -> Redirect to landing page perkenalan index.html
     if (qrObj && qrObj.status === 'disabled') {
-        alert(`QR Code ${qrId} telah dimatikan oleh admin. Mengarahkan ke halaman perkenalan layanan...`);
+        alert(`QR Code ${qrId} telah dimatikan oleh admin. Mengarahkan ke halaman perkenalan...`);
         window.location.hash = '#landing';
         return;
     }
@@ -250,7 +262,7 @@ function renderScanView(qrId) {
         return;
     }
 
-    // Status Check 3: If UNASSIGNED (Belum Didaftarkan) -> Redirect to Activation Form
+    // Status Check 3: If UNASSIGNED (Belum Didaftarkan) -> Redirect to index.html Activation / Registration Page
     if (!qrObj || qrObj.status === 'unassigned') {
         window.location.hash = `#activate/${qrId}`;
         return;
@@ -270,7 +282,47 @@ function renderScanView(qrId) {
         }
         qrObj.scansCount = newScans;
         saveLocalState();
+
+        // Render Realtime Review Feed for this cafe
+        renderRealtimeReviewFeed(qrObj);
     }
+}
+
+function renderRealtimeReviewFeed(qrObj) {
+    const container = document.getElementById('scan-reviews-container');
+    const countEl = document.getElementById('scan-review-count');
+    if (!container || !qrObj) return;
+
+    const allReviews = appState.data.reviews || [];
+    const cafeReviews = allReviews.filter(r => r.qrId === qrObj.id || (r.cafeName && r.cafeName.toLowerCase() === qrObj.cafeName.toLowerCase()));
+
+    if (countEl) countEl.textContent = cafeReviews.length;
+
+    if (cafeReviews.length === 0) {
+        container.innerHTML = `
+            <div style="text-align:center; padding:16px; color:var(--text-muted); font-size:0.85rem;">
+                <i class="fa-regular fa-star" style="font-size:1.4rem; color:var(--google-yellow); margin-bottom:6px; display:block;"></i>
+                Jadilah pengunjung pertama yang memberikan Ulasan Bintang 5 untuk <strong>${qrObj.cafeName}</strong>!
+            </div>
+        `;
+        return;
+    }
+
+    container.innerHTML = cafeReviews.map(r => `
+        <div class="review-feed-card">
+            <div class="review-feed-header">
+                <div class="review-feed-author">
+                    <i class="fa-solid fa-circle-user" style="color:var(--accent-cyan); font-size:1.1rem;"></i>
+                    ${r.userName || 'Pengunjung Google'}
+                </div>
+                <div class="review-feed-time">${r.timestamp || 'Baru saja'}</div>
+            </div>
+            <div class="review-feed-stars">
+                ${'★'.repeat(r.stars || 5)}${'☆'.repeat(5 - (r.stars || 5))}
+            </div>
+            ${r.comment ? `<div class="review-feed-body">"${r.comment}"</div>` : ''}
+        </div>
+    `).join('');
 }
 
 function renderActivationView(qrId) {
@@ -511,17 +563,20 @@ function setupEventListeners() {
     if (btnPostReview) {
         btnPostReview.addEventListener('click', () => {
             if (appState.activeScanQr) {
-                const targetUrl = ensureDirectWriteReviewUrl(appState.activeScanQr.googleUrl, appState.activeScanQr.cafeName);
-                
+                const qrObj = appState.activeScanQr;
+                const reviewTextEl = document.getElementById('google-review-text');
+                const commentText = reviewTextEl ? reviewTextEl.value.trim() : '';
+
                 // Track review submission in database
                 const revId = 'REV-' + Date.now();
-                const reviewTextEl = document.getElementById('google-review-text');
                 const reviewData = {
-                    qrId: appState.activeScanQr.id,
-                    cafeName: appState.activeScanQr.cafeName,
+                    id: revId,
+                    qrId: qrObj.id,
+                    cafeName: qrObj.cafeName,
+                    userName: 'Pengunjung Google',
                     stars: appState.selectedStarRating || 5,
-                    comment: reviewTextEl ? reviewTextEl.value : '',
-                    timestamp: new Date().toLocaleString('id-ID')
+                    comment: commentText,
+                    timestamp: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) + ', Hari ini'
                 };
 
                 if (!appState.data.reviews) appState.data.reviews = [];
@@ -533,10 +588,21 @@ function setupEventListeners() {
 
                 saveLocalState();
 
-                // Direct redirect to Google Review submission page!
-                window.location.href = targetUrl;
+                // Show glowing success banner
+                const bannerEl = document.getElementById('scan-review-success-banner');
+                const bannerMsg = document.getElementById('success-banner-msg');
+                if (bannerEl && bannerMsg) {
+                    bannerMsg.textContent = `🎉 Terimakasih! Ulasan Bintang 5 Anda telah berhasil dikirim & masuk ke ulasan ${qrObj.cafeName}!`;
+                    bannerEl.classList.remove('hidden');
+                }
+
+                // Reset textarea
+                if (reviewTextEl) reviewTextEl.value = '';
+
+                // Re-render live review feed instantly!
+                renderRealtimeReviewFeed(qrObj);
             } else {
-                alert('Mengarahkan ke Google Review...');
+                alert('Silakan scan QR Code kafe terlebih dahulu.');
                 window.location.hash = '#landing';
             }
         });

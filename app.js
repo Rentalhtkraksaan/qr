@@ -31,10 +31,14 @@ const DOMAIN_KEY = 'reviewboost_base_domain';
 function getEffectiveBaseDomain() {
     const saved = localStorage.getItem(DOMAIN_KEY);
     if (saved) return saved;
-    if (window.location.hostname.includes('vercel.app')) {
-        return window.location.origin;
-    }
-    return 'https://reviewin-aja.vercel.app';
+    const origin = window.location.origin;
+    const path = window.location.pathname
+        .replace('/admin/index.html', '')
+        .replace('/admin/', '')
+        .replace('/admin', '')
+        .replace('/index.html', '');
+    const cleanPath = path.endsWith('/') ? path.slice(0, -1) : path;
+    return `${origin}${cleanPath}`;
 }
 
 // Initial Dataset

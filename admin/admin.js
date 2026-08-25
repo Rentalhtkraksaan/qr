@@ -116,32 +116,36 @@ function getEffectiveBaseDomain() {
 }
 
 function ensureDirectWriteReviewUrl(rawUrl, cafeName) {
-    if (!rawUrl && !cafeName) return 'https://maps.google.com';
+    if (!rawUrl && !cafeName) return 'https://www.google.com/maps';
     let url = rawUrl ? rawUrl.trim() : '';
 
-    if (url.includes('!9m1!1b1!') || url.includes('writereview') || url.includes('/review')) {
+    if (url && url.startsWith('http')) {
+        if (url.includes('search.google.com/local/writereview?placeid=') || url.includes('/review')) {
+            return url;
+        }
+
+        const placeIdMatch = url.match(/placeid=([a-zA-Z0-9_-]+)/i);
+        if (placeIdMatch && placeIdMatch[1]) {
+            return `https://search.google.com/local/writereview?placeid=${placeIdMatch[1]}`;
+        }
+
+        if (url.includes('google.com/maps/place/') || url.includes('maps.google.com/place/')) {
+            if (url.includes('!9m1!1b1!')) return url;
+            if (url.includes('data=')) {
+                return url.replace('data=', 'data=!9m1!1b1!');
+            } else {
+                const parts = url.split('?');
+                const path = parts[0].endsWith('/') ? parts[0].slice(0, -1) : parts[0];
+                const query = parts[1] ? `?${parts[1]}` : '';
+                return `${path}/data=!9m1!1b1!${query}`;
+            }
+        }
+
         return url;
     }
 
-    if (url.includes('google.com/maps/place/') || url.includes('maps.google.com/place/')) {
-        if (url.includes('data=')) {
-            return url.replace('data=', 'data=!9m1!1b1!');
-        } else {
-            const parts = url.split('?');
-            const path = parts[0].endsWith('/') ? parts[0].slice(0, -1) : parts[0];
-            const query = parts[1] ? `?${parts[1]}` : '';
-            return `${path}/data=!9m1!1b1!${query}`;
-        }
-    }
-
-    const placeIdMatch = url.match(/placeid=([a-zA-Z0-9_-]+)/i) || url.match(/(ChIJ[a-zA-Z0-9_-]+)/);
-    if (placeIdMatch) {
-        const pid = placeIdMatch[1] || placeIdMatch[0];
-        return `https://search.google.com/local/writereview?placeid=${pid}`;
-    }
-
-    const query = encodeURIComponent(cafeName || 'Raluna Cafe');
-    return `https://search.google.com/local/writereview?query=${query}`;
+    const query = encodeURIComponent(cafeName || 'Kafe');
+    return `https://www.google.com/maps/search/?api=1&query=${query}`;
 }
 
 // Data Sync Engine
@@ -203,11 +207,23 @@ function renderAdminDashboard() {
     const mainDashboard = document.getElementById('admin-main-dashboard');
 
     if (!adminState.isAdminLoggedIn) {
-        if (loginView) loginView.classList.remove('hidden');
-        if (mainDashboard) mainDashboard.classList.add('hidden');
+        if (loginView) {
+            loginView.classList.remove('hidden');
+            loginView.style.display = 'block';
+        }
+        if (mainDashboard) {
+            mainDashboard.classList.add('hidden');
+            mainDashboard.style.display = 'none';
+        }
     } else {
-        if (loginView) loginView.classList.add('hidden');
-        if (mainDashboard) mainDashboard.classList.remove('hidden');
+        if (loginView) {
+            loginView.classList.add('hidden');
+            loginView.style.display = 'none';
+        }
+        if (mainDashboard) {
+            mainDashboard.classList.remove('hidden');
+            mainDashboard.style.display = 'block';
+        }
 
         const qrs = adminState.data.qrs;
         const totalQr = qrs.length;

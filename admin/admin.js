@@ -105,10 +105,14 @@ async function hashPin(plainPin) {
 function getEffectiveBaseDomain() {
     const saved = localStorage.getItem(DOMAIN_KEY);
     if (saved) return saved;
-    if (window.location.hostname.includes('vercel.app')) {
-        return window.location.origin;
-    }
-    return 'https://reviewin-aja.vercel.app';
+    const origin = window.location.origin;
+    const path = window.location.pathname
+        .replace('/admin/index.html', '')
+        .replace('/admin/', '')
+        .replace('/admin', '')
+        .replace('/index.html', '');
+    const cleanPath = path.endsWith('/') ? path.slice(0, -1) : path;
+    return `${origin}${cleanPath}`;
 }
 
 function ensureDirectWriteReviewUrl(rawUrl, cafeName) {
@@ -658,23 +662,31 @@ function setupAdminEventListeners() {
             const enteredUsn = document.getElementById('admin-usn').value.trim();
             const enteredPwd = document.getElementById('admin-pwd').value.trim();
 
-            const hashedUsn = await hashPin(enteredUsn);
-            const hashedPwd = await hashPin(enteredPwd);
-
-            const targetUsnHash = await hashPin('24214');
-            const targetPwdHash = await hashPin('160905');
-
-            // Robust Check: Allows both plaintext match AND SHA-256 hash match
-            const isUsnValid = (enteredUsn === '24214') || (hashedUsn === targetUsnHash);
-            const isPwdValid = (enteredPwd === '160905') || (hashedPwd === targetPwdHash);
-
-            if (isUsnValid && isPwdValid) {
+            // Direct match first for instant 100% reliable login
+            if (enteredUsn === '24214' && enteredPwd === '160905') {
                 adminState.isAdminLoggedIn = true;
                 sessionStorage.setItem('reviewboost_admin_auth', 'true');
                 renderAdminDashboard();
-            } else {
-                alert('❌ Username atau Password Admin Salah!\n\nUsername: 24214\nPassword: 160905');
+                return;
             }
+
+            try {
+                const hashedUsn = await hashPin(enteredUsn);
+                const hashedPwd = await hashPin(enteredPwd);
+                const targetUsnHash = await hashPin('24214');
+                const targetPwdHash = await hashPin('160905');
+
+                if (hashedUsn === targetUsnHash && hashedPwd === targetPwdHash) {
+                    adminState.isAdminLoggedIn = true;
+                    sessionStorage.setItem('reviewboost_admin_auth', 'true');
+                    renderAdminDashboard();
+                    return;
+                }
+            } catch (err) {
+                console.warn('Login hash error fallback:', err);
+            }
+
+            alert('❌ Username atau Password Admin Salah!\n\nUsername: 24214\nPassword: 160905');
         });
     }
 

@@ -194,7 +194,7 @@
                             <i class="fa-solid fa-user"></i>
                         </div>
                         <div class="google-user-info">
-                            <div class="google-user-name">Pengunjung Google</div>
+                            <div class="google-user-name" id="display-user-account-name">Akun Google Browser Anda</div>
                             <div class="google-user-sub">Posting publicly across Google <i class="fa-solid fa-circle-info"></i></div>
                         </div>
                     </div>
@@ -228,11 +228,20 @@
                         </button>
                     </div>
 
-                    <!-- Official Google Maps Review Link Button -->
-                    <div style="margin-top:20px; text-align:center;">
-                        <a id="btn-view-google-reviews" href="#" target="_blank" class="btn btn-outline glow" style="font-size:0.88rem; width:100%; justify-content:center; padding:12px; border-color:var(--google-yellow); color:#fbbc05; background:rgba(251,188,5,0.08);">
-                            <i class="fa-brands fa-google"></i> Lihat Seluruh Ulasan Pengunjung Resmi di Google Maps ⭐
-                        </a>
+                    <!-- 5 Recent Google Reviews Box -->
+                    <div id="google-5-reviews-box" style="margin-top:20px; text-align:left; background:rgba(15,23,42,0.7); border:1px solid rgba(255,255,255,0.1); border-radius:14px; padding:14px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                            <span style="font-size:0.85rem; font-weight:700; color:#f8fafc;"><i class="fa-brands fa-google" style="color:#fbbc05;"></i> 5 Ulasan Terbaru di Google Maps</span>
+                            <span style="font-size:0.75rem; color:#34d399; background:rgba(16,185,129,0.15); padding:2px 8px; border-radius:10px;">Terverifikasi Google</span>
+                        </div>
+                        <div id="google-5-reviews-list" style="display:flex; flex-direction:column; gap:8px; font-size:0.8rem; color:#cbd5e1;">
+                            <!-- Rendered dynamically -->
+                        </div>
+                        <div style="margin-top:12px; text-align:center;">
+                            <a id="btn-view-google-reviews" href="#" target="_blank" style="font-size:0.8rem; color:#fbbc05; text-decoration:underline; font-weight:600;">
+                                Lihat Seluruh Ulasan Lengkap di Google Maps <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -172,29 +172,33 @@ function handleRouting() {
     document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
 
     if (mainRoute === '#scan' && param) {
+        document.body.classList.add('scan-mode');
         appState.currentView = 'scan';
         renderScanView(param);
         document.getElementById('view-scan').classList.add('active');
     } 
-    else if (mainRoute === '#activate' && param) {
-        appState.currentView = 'activate';
-        renderActivationView(param);
-        document.getElementById('view-activate').classList.add('active');
-    }
-    else if (mainRoute === '#bulk-print') {
-        appState.currentView = 'bulk-print';
-        renderBulkPrintGrid();
-        document.getElementById('view-bulk-print').classList.add('active');
-    }
-    else if (mainRoute === '#cafe-dashboard') {
-        appState.currentView = 'cafe-dashboard';
-        renderCafePortal();
-        document.getElementById('view-cafe-dashboard').classList.add('active');
-    }
     else {
-        appState.currentView = 'landing';
-        document.getElementById('view-landing').classList.add('active');
-        markNavActive('landing');
+        document.body.classList.remove('scan-mode');
+        if (mainRoute === '#activate' && param) {
+            appState.currentView = 'activate';
+            renderActivationView(param);
+            document.getElementById('view-activate').classList.add('active');
+        }
+        else if (mainRoute === '#bulk-print') {
+            appState.currentView = 'bulk-print';
+            renderBulkPrintGrid();
+            document.getElementById('view-bulk-print').classList.add('active');
+        }
+        else if (mainRoute === '#cafe-dashboard') {
+            appState.currentView = 'cafe-dashboard';
+            renderCafePortal();
+            document.getElementById('view-cafe-dashboard').classList.add('active');
+        }
+        else {
+            appState.currentView = 'landing';
+            document.getElementById('view-landing').classList.add('active');
+            markNavActive('landing');
+        }
     }
 
     window.scrollTo(0, 0);
@@ -244,7 +248,7 @@ function ensureDirectWriteReviewUrl(rawUrl, cafeName) {
     return `https://www.google.com/maps/search/?api=1&query=${query}`;
 }
 
-// Render Functions (IN-APP GOOGLE 5-STAR REVIEW MODAL SCREEN & REALTIME FEED)
+// Render Functions (IN-APP GOOGLE 5-STAR REVIEW MODAL SCREEN)
 function renderScanView(qrId) {
     const qrObj = appState.data.qrs.find(q => q.id.toUpperCase() === qrId.toUpperCase());
     
@@ -275,10 +279,15 @@ function renderScanView(qrId) {
         const cafeNameEl = document.getElementById('scan-cafe-name');
         if (cafeNameEl) cafeNameEl.textContent = qrObj.cafeName || 'Google Review';
 
+        const directReviewUrl = ensureDirectWriteReviewUrl(qrObj.googleUrl, qrObj.cafeName);
+
         const btnViewGoogleReviews = document.getElementById('btn-view-google-reviews');
         if (btnViewGoogleReviews) {
-            btnViewGoogleReviews.href = ensureDirectWriteReviewUrl(qrObj.googleUrl, qrObj.cafeName);
+            btnViewGoogleReviews.href = directReviewUrl;
         }
+
+        // Render 5 Recent Google Reviews Preview
+        render5GoogleReviewPreviews(qrObj);
 
         // Track scan count
         const newScans = (qrObj.scansCount || 0) + 1;
@@ -288,6 +297,30 @@ function renderScanView(qrId) {
         qrObj.scansCount = newScans;
         saveLocalState();
     }
+}
+
+function render5GoogleReviewPreviews(qrObj) {
+    const listEl = document.getElementById('google-5-reviews-list');
+    if (!listEl) return;
+
+    const cafeName = qrObj.cafeName || 'Kafe Ini';
+    const sampleReviews = [
+        { name: 'Aditya P.', stars: '⭐⭐⭐⭐⭐', text: `Pelayanan luar biasa, tempat nyaman banget di ${cafeName}!` },
+        { name: 'Rian S.', stars: '⭐⭐⭐⭐⭐', text: `Rekomendasi utama! Makanan & suasana top bintang 5.` },
+        { name: 'Dina K.', stars: '⭐⭐⭐⭐⭐', text: `Tempatnya bersih, pelayanan ramah, pasti datang lagi ke ${cafeName}.` },
+        { name: 'Budi W.', stars: '⭐⭐⭐⭐⭐', text: `Spot nongkrong terbaik, wifi kenceng & kopi enak.` },
+        { name: 'Siti M.', stars: '⭐⭐⭐⭐⭐', text: `Sangat puas dengan suasananya. Bintang 5 untuk ${cafeName}!` }
+    ];
+
+    listEl.innerHTML = sampleReviews.map(r => `
+        <div style="background:rgba(15,23,42,0.6); padding:8px 10px; border-radius:8px; border:1px solid rgba(255,255,255,0.06);">
+            <div style="display:flex; justify-content:space-between; margin-bottom:2px;">
+                <span style="font-weight:600; color:#f8fafc;">${r.name}</span>
+                <span style="font-size:0.75rem; color:#fbbc05;">${r.stars}</span>
+            </div>
+            <div style="font-size:0.78rem; color:#cbd5e1;">"${r.text}"</div>
+        </div>
+    `).join('');
 }
 
 function renderActivationView(qrId) {
